@@ -6,6 +6,7 @@ module.exports = {
     "@remix-run/eslint-config/jest-testing-library",
     "prettier",
   ],
+  ignorePatterns: ["public/entry.worker.js"],
   env: {
     "cypress/globals": true,
   },

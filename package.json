@@ -5,12 +5,12 @@
   "private": false,
   "sideEffects": false,
   "scripts": {
-    "build": "run-s build:*",
+    "build": "npm-run-all -p build:*",
     "build:css": "npm run generate:css -- --minify",
-    "build:remix": "remix build",
-    "dev": "run-p dev:*",
+    "build:remix": "cross-env NODE_ENV=production remix build",
+    "dev": "npm-run-all -p dev:*",
     "dev:css": "npm run generate:css -- --watch",
-    "dev:remix": "cross-env NODE_ENV=development binode --require ./mocks -- @remix-run/dev:remix dev",
+    "dev:remix": "cross-env NODE_ENV=development remix dev",
     "format": "prettier --write .",
     "generate:css": "tailwindcss -o ./app/styles/tailwind.css",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
@@ -22,7 +22,9 @@
     "pretest:e2e:run": "npm run build",
     "test:e2e:run": "cross-env PORT=8811 start-server-and-test start:mocks http://localhost:8811 \"npx cypress run\"",
     "typecheck": "tsc -b && tsc -b cypress",
-    "validate": "run-p \"test -- --run\" lint typecheck test:e2e:run"
+    "validate": "run-p \"test -- --run\" lint typecheck test:e2e:run",
+    "build:worker": "esbuild ./app/entry.worker.ts --outfile=./public/entry.worker.js --minify --bundle --format=esm --define:process.env.NODE_ENV='\"production\"'",
+    "dev:worker": "esbuild ./app/entry.worker.ts --outfile=./public/entry.worker.js --bundle --format=esm --define:process.env.NODE_ENV='\"development\"' --watch"
   },
   "prettier": {},
   "eslintIgnore": [
@@ -40,7 +42,12 @@
     "isbot": "^3.6.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tiny-invariant": "^1.3.1"
+    "tiny-invariant": "^1.3.1",
+    "node-persist": "^3.1.0",
+    "web-push": "^3.4.5",
+    "npm-run-all": "^4.1.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
@@ -81,7 +88,8 @@
     "typescript": "^4.8.4",
     "vite": "^3.2.2",
     "vite-tsconfig-paths": "^3.5.2",
-    "vitest": "^0.24.5"
+    "vitest": "^0.24.5",
+    "@types/node-persist": "^3.1.2"
   },
   "engines": {
     "node": ">=14"
