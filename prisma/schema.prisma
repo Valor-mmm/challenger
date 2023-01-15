@@ -7,32 +7,39 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id    String @id @default(cuid())
-  email String @unique
+model ChallengePointMap {
+  id String @id @default(cuid())
+  challenge String
+  points Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  template Template @relation(fields: [templateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  templateId String
 
-  password Password?
-  notes    Note[]
+  activity Activity[]
 }
 
-model Password {
-  hash String
+model Template {
+  id String @id @default(cuid())
+  name String
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  challengePointMap ChallengePointMap[]
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Activity {
+  id String @id @default(cuid())
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  challengePointMap ChallengePointMap @relation(fields: [challengePointMapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  challengePointMapId String
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
+}
+
+model User {
+  id String @id @default(cuid())
+  name String
+  email String
+  isAdmin Boolean
+
+  activities Activity[]
 }
